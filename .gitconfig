@@ -1,6 +1,6 @@
 [alias]
     # --- 0. ヘルプ機能 (使用タイミング別で表示) ---
-    help-aliases = "!git config --get-regexp '^aliasdoc\\.' | awk 'function group_for(name) { if (name == \"ha\") return \"ヘルプ\"; if (name ~ /^(sw|swc|back|rs|unstage|restore-to)$/) return \"切り替え・復元\"; if (name ~ /^(st|sts|cm|ca|cma|fixup|squash|aa|empty|ap|ad|aps|apc|apcm)$/) return \"コミット・変更\"; if (name ~ /^(d|dc|uncommit|dw|dwo|makepatch|reword-at)$/) return \"差分・修正\"; if (name ~ /^(lg|lga|lgn|last|lgs|trace|grep-hist)$/) return \"ログ・履歴\"; if (name ~ /^(br|brv|brm|br-active|bclean|clean-wip|clean-dry|sync-all)$/) return \"ブランチ整理\"; if (name ~ /^(wt|wt-list|wt-add|wt-rm|wt-prune|wt-lock|wt-unlock)$/) return \"worktree\"; if (name ~ /^(sl|sa|sp|stash-wip|unsh)$/) return \"退避・stash\"; if (name ~ /^(today|hh|conflicts|ec|lf|hotfiles|summary|changelog|ref|tag-today)$/) return \"調査・診断\"; if (name ~ /^(db|up|pub|rdb)$/) return \"定番操作\"; return \"未分類\" } function group_order(group) { if (group == \"ヘルプ\") return 0; if (group == \"切り替え・復元\") return 10; if (group == \"コミット・変更\") return 20; if (group == \"差分・修正\") return 30; if (group == \"ログ・履歴\") return 40; if (group == \"ブランチ整理\") return 50; if (group == \"worktree\") return 55; if (group == \"退避・stash\") return 60; if (group == \"調査・診断\") return 70; if (group == \"定番操作\") return 80; return 90 } function item_order(name) { if (name == \"ha\") return 0; if (name == \"sw\") return 10; if (name == \"swc\") return 20; if (name == \"back\") return 30; if (name == \"rs\") return 40; if (name == \"unstage\") return 50; if (name == \"restore-to\") return 60; if (name == \"st\") return 10; if (name == \"aa\") return 20; if (name == \"cm\") return 30; if (name == \"cma\") return 35; if (name == \"ca\") return 40; if (name == \"fixup\") return 50; if (name == \"squash\") return 60; if (name == \"ap\") return 65; if (name == \"ad\") return 66; if (name == \"aps\") return 67; if (name == \"apc\") return 68; if (name == \"apcm\") return 69; if (name == \"empty\") return 70; if (name == \"sts\") return 80; if (name == \"d\") return 5; if (name == \"dc\") return 10; if (name == \"dw\") return 20; if (name == \"dwo\") return 30; if (name == \"makepatch\") return 40; if (name == \"uncommit\") return 50; if (name == \"reword-at\") return 60; if (name == \"lg\") return 5; if (name == \"lga\") return 10; if (name == \"lgn\") return 20; if (name == \"last\") return 30; if (name == \"lgs\") return 40; if (name == \"trace\") return 50; if (name == \"grep-hist\") return 60; if (name == \"br\") return 10; if (name == \"brv\") return 20; if (name == \"brm\") return 25; if (name == \"br-active\") return 30; if (name == \"bclean\") return 40; if (name == \"clean-wip\") return 50; if (name == \"clean-dry\") return 55; if (name == \"sync-all\") return 60; if (name == \"wt\") return 10; if (name == \"wt-list\") return 20; if (name == \"wt-add\") return 30; if (name == \"wt-rm\") return 40; if (name == \"wt-prune\") return 50; if (name == \"wt-lock\") return 60; if (name == \"wt-unlock\") return 70; if (name == \"sl\") return 10; if (name == \"sa\") return 20; if (name == \"sp\") return 25; if (name == \"stash-wip\") return 30; if (name == \"unsh\") return 40; if (name == \"today\") return 10; if (name == \"hh\") return 20; if (name == \"conflicts\") return 30; if (name == \"ec\") return 40; if (name == \"lf\") return 50; if (name == \"hotfiles\") return 60; if (name == \"summary\") return 70; if (name == \"changelog\") return 80; if (name == \"ref\") return 90; if (name == \"tag-today\") return 100; if (name == \"db\") return 10; if (name == \"up\") return 20; if (name == \"pub\") return 30; if (name == \"rdb\") return 40; return 90 } { name = substr($1, 10); value = substr($0, length($1) + 2); split(value, parts, \" / 使い方: \"); desc = parts[1]; usage = parts[2]; group = group_for(name); printf \"%03d\\t%03d\\t%s\\t%s\\t%s\\t%s\\n\", group_order(group), item_order(name), group, name, desc, usage }' | sort -t $'\\t' -k1,1n -k2,2n | awk -F $'\\t' -v OFS=$'\\t' 'BEGIN { print \"コマンド\\t用途\\t使い方\" } { if ($3 != prev) { if (prev != \"\") print \"\"; print \"【\" $3 \"】\"; prev = $3 } print $4, $5, $6 }' | column -t -s $'\\t'"
+    help-aliases = "!git config --get-regexp '^aliasdoc\\.' | awk 'function group_for(name) { if (name == \"ha\") return \"ヘルプ\"; if (name ~ /^(sw|swc|back|rs|unstage|restore-to)$/) return \"切り替え・復元\"; if (name ~ /^(st|sts|cm|ca|cma|fixup|squash|aa|ap|ad|aps|apc|apcm)$/) return \"コミット・変更\"; if (name ~ /^(d|dc|uncommit|dw|dwo|reword-at)$/) return \"差分・修正\"; if (name ~ /^(lg|lga|lgn|last|lgs|trace|grep-hist)$/) return \"ログ・履歴\"; if (name ~ /^(br|brv|brm|br-active|bclean|clean-wip|clean-dry|sync-all)$/) return \"ブランチ整理\"; if (name ~ /^(wt|wt-list|wt-add|wt-rm)$/) return \"worktree\"; if (name ~ /^(sl|sa|sp|stash-wip|unsh)$/) return \"退避・stash\"; if (name ~ /^(today|hh|conflicts|ec|lf|hotfiles|changelog|ref)$/) return \"調査・診断\"; if (name ~ /^(db|up|pub|rdb)$/) return \"定番操作\"; return \"未分類\" } function group_order(group) { if (group == \"ヘルプ\") return 0; if (group == \"切り替え・復元\") return 10; if (group == \"コミット・変更\") return 20; if (group == \"差分・修正\") return 30; if (group == \"ログ・履歴\") return 40; if (group == \"ブランチ整理\") return 50; if (group == \"worktree\") return 55; if (group == \"退避・stash\") return 60; if (group == \"調査・診断\") return 70; if (group == \"定番操作\") return 80; return 90 } function item_order(name) { if (name == \"ha\") return 0; if (name == \"sw\") return 10; if (name == \"swc\") return 20; if (name == \"back\") return 30; if (name == \"rs\") return 40; if (name == \"unstage\") return 50; if (name == \"restore-to\") return 60; if (name == \"st\") return 10; if (name == \"aa\") return 20; if (name == \"cm\") return 30; if (name == \"cma\") return 35; if (name == \"ca\") return 40; if (name == \"fixup\") return 50; if (name == \"squash\") return 60; if (name == \"ap\") return 65; if (name == \"ad\") return 66; if (name == \"aps\") return 67; if (name == \"apc\") return 68; if (name == \"apcm\") return 69; if (name == \"sts\") return 80; if (name == \"d\") return 5; if (name == \"dc\") return 10; if (name == \"dw\") return 20; if (name == \"dwo\") return 30; if (name == \"uncommit\") return 50; if (name == \"reword-at\") return 60; if (name == \"lg\") return 5; if (name == \"lga\") return 10; if (name == \"lgn\") return 20; if (name == \"last\") return 30; if (name == \"lgs\") return 40; if (name == \"trace\") return 50; if (name == \"grep-hist\") return 60; if (name == \"br\") return 10; if (name == \"brv\") return 20; if (name == \"brm\") return 25; if (name == \"br-active\") return 30; if (name == \"bclean\") return 40; if (name == \"clean-wip\") return 50; if (name == \"clean-dry\") return 55; if (name == \"sync-all\") return 60; if (name == \"wt\") return 10; if (name == \"wt-list\") return 20; if (name == \"wt-add\") return 30; if (name == \"wt-rm\") return 40; if (name == \"sl\") return 10; if (name == \"sa\") return 20; if (name == \"sp\") return 25; if (name == \"stash-wip\") return 30; if (name == \"unsh\") return 40; if (name == \"today\") return 10; if (name == \"hh\") return 20; if (name == \"conflicts\") return 30; if (name == \"ec\") return 40; if (name == \"lf\") return 50; if (name == \"hotfiles\") return 60; if (name == \"changelog\") return 80; if (name == \"ref\") return 90; if (name == \"db\") return 10; if (name == \"up\") return 20; if (name == \"pub\") return 30; if (name == \"rdb\") return 40; return 90 } { name = substr($1, 10); value = substr($0, length($1) + 2); split(value, parts, \" / 使い方: \"); desc = parts[1]; usage = parts[2]; group = group_for(name); printf \"%03d\\t%03d\\t%s\\t%s\\t%s\\t%s\\n\", group_order(group), item_order(name), group, name, desc, usage }' | sort -t $'\\t' -k1,1n -k2,2n | awk -F $'\\t' -v OFS=$'\\t' 'BEGIN { print \"コマンド\\t用途\\t使い方\" } { if ($3 != prev) { if (prev != \"\") print \"\"; print \"【\" $3 \"】\"; prev = $3 } print $4, $5, $6 }' | column -t -s $'\\t'"
     ha = !git help-aliases
 
     # --- 1. switch/restore 系 (モダンGit: 安全な切り替えと復元) ---
@@ -20,7 +20,6 @@
     fixup = commit --fixup           # 用途: 指定コミットへの fixup を作成 / 使い方: git fixup <commit>
     squash = commit --squash         # 用途: 指定コミットへの squash を作成 / 使い方: git squash <commit>
     aa = add -A                      # 用途: 全変更（追加・更新・削除）をステージング / 使い方: git aa
-    empty = commit --allow-empty -m  # 用途: 空コミットを作成（CIトリガー等） / 使い方: git empty
 
     # --- 3. ログ表示 (視認性向上) ---
     lg = log --graph --oneline --decorate # 用途: 履歴を簡易グラフ表示 / 使い方: git lg
@@ -32,7 +31,7 @@
     lgs = log --graph --stat --name-status --pretty=format:'%C(yellow)commit %h%Creset%C(auto)%d%Creset%nAuthor: %an <%ae>%nDate:   %cd%n%n    %s%n'
     # 用途: 指定ファイルの変更内容を徹底追跡 / 使い方: git trace <ファイル名>
     trace = !sh -c 'git log --follow --graph --pretty=format:\"%C(yellow)%h%Creset -%C(auto)%d%Creset %s %C(green)(%cr) %C(bold blue)<%an>%Creset\" -p -- \"$1\"' -
-    # 用途: 変更内容（diff）を検索キーワードで絞り込み / 使い方: git grep-hist <検索語>
+    # 用途: コミットの変更差分（diff）の内容から指定キーワードを検索 / 使い方: git grep-hist <検索語>
     grep-hist = !sh -c 'git log --graph --pretty=format:\"%C(yellow)%h%Creset -%C(auto)%d%Creset %s %C(green)(%cr) %C(bold blue)<%an>%Creset\" -G\"$1\"' -
 
     # --- 4. クリーンアップ・ブランチ管理 ---
@@ -51,9 +50,6 @@
     wt-list = worktree list          # 用途: worktree の一覧を表示 / 使い方: git wt-list
     wt-add = !"sh -c 'branch=$1; start=${2:-}; repo=$(basename \"$(git rev-parse --show-toplevel)\"); safe_repo=$(printf \"%s\" \"$repo\" | sed \"s#[^A-Za-z0-9._-]#-#g\"); safe_branch=$(printf \"%s\" \"$branch\" | sed \"s#[^A-Za-z0-9._-]#-#g\"); path=\"../${safe_repo}-${safe_branch}\"; if git rev-parse --verify --quiet \"$branch\" >/dev/null 2>&1; then git worktree add \"$path\" \"$branch\"; else if [ -n \"$start\" ]; then git worktree add -b \"$branch\" \"$path\" \"$start\"; else git worktree add -b \"$branch\" \"$path\"; fi; fi' -" # 用途: ブランチを作成・取得して repo名-branch名 の worktree を新規作成 / 使い方: git wt-add <branch> [<start-point>]
     wt-rm = worktree remove          # 用途: worktree を削除 / 使い方: git wt-rm <path>
-    wt-prune = worktree prune        # 用途: 壊れた worktree 参照を掃除 / 使い方: git wt-prune
-    wt-lock = worktree lock          # 用途: worktree をロック / 使い方: git wt-lock <path>
-    wt-unlock = worktree unlock      # 用途: worktree のロックを解除 / 使い方: git wt-unlock <path>
 
     # --- 6. add -p 補助 ---
     ap = add -p                      # 用途: インタラクティブに差分を選んでステージング / 使い方: git ap
@@ -75,7 +71,6 @@
     uncommit = reset --soft HEAD^    # 用途: 直前のコミットを取り消して変更を保持 / 使い方: git uncommit
     dw = diff -w --ignore-all-space  # 用途: 空白差分を無視して比較 / 使い方: git dw
     dwo = diff --word-diff           # 用途: 単語単位で詳細比較 / 使い方: git dwo
-    makepatch = diff --no-color      # 用途: パッチ生成用 / 使い方: git makepatch > file.patch
     # 用途: 過去のコミットメッセージをリベースなしで修正 / 使い方: git reword-at <hash>
     reword-at = !sh -c 'git commit --allow-empty --fixup=reword:\"$1\" && GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash \"$1\"~1' -
 
@@ -86,10 +81,8 @@
     conflicts = diff --name-only --diff-filter=U # 用途: コンフリクト中ファイル一覧 / 使い方: git conflicts
     ec = !"files=$(git conflicts); if [ -n \"$files\" ]; then echo \"$files\" | xargs ${VISUAL:-${EDITOR:-code --wait}}; fi" # 用途: コンフリクトファイルを VS Code で開く / 使い方: git ec
     hotfiles = !"git log --name-only --since='1 month ago' --pretty=format: | grep -v '^$' | sort | uniq -c | sort -nr | head -n 20" # 用途: 頻繁に触るファイル調査 / 使い方: git hotfiles
-    summary = count-objects -vH      # 用途: リポジトリサイズ確認 / 使い方: git summary
     changelog = !"git log $(git describe --tags --abbrev=0)..HEAD --oneline" # 用途: リリース間の更新一覧 / 使い方: git changelog
     ref = reflog --date=relative     # 用途: 全行動履歴の救済表示 / 使い方: git ref
-    tag-today = !"git tag release-$(date +'%Y%m%d')" # 用途: 日付で軽量タグ付与 / 使い方: git tag-today
 
     # --- 10. その他ショートカット ---
     db = !"git switch $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')" # 用途: origin の既定ブランチへ切り替える / 使い方: git db
@@ -113,14 +106,13 @@
     fixup = 指定コミットへの fixup を作成する / 使い方: git fixup <commit>
     squash = 指定コミットへの squash を作成する / 使い方: git squash <commit>
     aa = 全変更をステージングする / 使い方: git aa
-    empty = 空コミットを作成する（CIトリガー等） / 使い方: git empty
     lg = 履歴を簡易グラフ表示する / 使い方: git lg
     lga = 全履歴を1行でグラフ表示する / 使い方: git lga
     lgn = 直近10件のみ表示する / 使い方: git lgn
     last = 直近コミットの要約と変更統計を表示する / 使い方: git last
     lgs = ファイル変更統計付きでログを表示する / 使い方: git lgs
     trace = 指定ファイルの変更内容を徹底追跡する / 使い方: git trace <ファイル名>
-    grep-hist = 変更内容を検索キーワードで絞り込む / 使い方: git grep-hist <検索語>
+    grep-hist = コミットの変更差分（diff）の内容から指定キーワードを検索する / 使い方: git grep-hist <検索語>
     br = ブランチ一覧を表示する / 使い方: git br
     brv = 詳細付きでブランチ一覧を表示する / 使い方: git brv
     brm = 現在のブランチ名を変更する / 使い方: git brm <新しいブランチ名>
@@ -133,9 +125,6 @@
     wt-list = worktree の一覧を表示する / 使い方: git wt-list
     wt-add = ブランチを作成・取得して repo名-branch名 の worktree を新規作成する / 使い方: git wt-add <branch> [<start-point>]
     wt-rm = worktree を削除する / 使い方: git wt-rm <path>
-    wt-prune = 壊れた worktree 参照を掃除する / 使い方: git wt-prune
-    wt-lock = worktree をロックする / 使い方: git wt-lock <path>
-    wt-unlock = worktree のロックを解除する / 使い方: git wt-unlock <path>
     ap = 差分を選んでインタラクティブにステージングする / 使い方: git ap
     ad = 差分確認のあとに add -p を開始する / 使い方: git ad
     aps = add -p のあとにステータスを表示する / 使い方: git aps
@@ -151,7 +140,6 @@
     uncommit = 直前のコミットを取り消して変更を保持する / 使い方: git uncommit
     dw = 空白差分を無視して比較する / 使い方: git dw
     dwo = 単語単位で詳細比較する / 使い方: git dwo
-    makepatch = パッチ生成用の diff を出す / 使い方: git makepatch > file.patch
     reword-at = 過去のコミットを fixup 経由で修正する / 使い方: git reword-at <hash>
     today = 今日の作業を作者名ベースで表示する / 使い方: git today
     hh = HEAD のハッシュをクリップボードへコピーする / 使い方: git hh
@@ -159,10 +147,8 @@
     conflicts = コンフリクト中のファイル一覧を表示する / 使い方: git conflicts
     ec = コンフリクトファイルを VS Code で開く / 使い方: git ec
     hotfiles = よく触るファイルを集計する / 使い方: git hotfiles
-    summary = リポジトリサイズを確認する / 使い方: git summary
     changelog = リリース間の更新一覧を表示する / 使い方: git changelog
     ref = reflog を相対時刻付きで表示する / 使い方: git ref
-    tag-today = 日付付きの軽量タグを作成する / 使い方: git tag-today
     db = origin の既定ブランチへ切り替える / 使い方: git db
     up = rebase 付きで pull する / 使い方: git up
     pub = 現在のブランチを origin に公開する / 使い方: git pub
