@@ -73,9 +73,7 @@
     d = diff                         # 用途: 差分を確認 / 使い方: git d
     dc = diff --cached               # 用途: ステージング済みの差分を確認 / 使い方: git dc
     uncommit = reset --soft HEAD^    # 用途: 直前のコミットを取り消して変更を保持 / 使い方: git uncommit
-    diff-w = diff -w --ignore-all-space # 用途: 空白差分を無視 / 使い方: git diff-w
     dw = diff -w --ignore-all-space  # 用途: 空白差分を無視して比較 / 使い方: git dw
-    diff-word = diff --word-diff     # 用途: 単語単位で詳細比較 / 使い方: git diff-word
     dwo = diff --word-diff           # 用途: 単語単位で詳細比較 / 使い方: git dwo
     makepatch = diff --no-color      # 用途: パッチ生成用 / 使い方: git makepatch > file.patch
     # 用途: 過去のコミットメッセージをリベースなしで修正 / 使い方: git reword-at <hash>
@@ -86,7 +84,7 @@
     hh = !"git rev-parse HEAD | clip && echo 'Copied HEAD hash to clipboard.'" # 用途: ハッシュをクリップボードにコピー / 使い方: git hh
     lf = !"git ls-files -z | xargs -0 wc -l | sort -rn | head -n 20" # 用途: 巨大ファイル調査 / 使い方: git lf
     conflicts = diff --name-only --diff-filter=U # 用途: コンフリクト中ファイル一覧 / 使い方: git conflicts
-    ec = !"git conflicts | xargs -r ${VISUAL:-${EDITOR:-code --wait}}" # 用途: コンフリクトファイルを VS Code で開く / 使い方: git ec
+    ec = !"files=$(git conflicts); if [ -n \"$files\" ]; then echo \"$files\" | xargs ${VISUAL:-${EDITOR:-code --wait}}; fi" # 用途: コンフリクトファイルを VS Code で開く / 使い方: git ec
     hotfiles = !"git log --name-only --since='1 month ago' --pretty=format: | grep -v '^$' | sort | uniq -c | sort -nr | head -n 20" # 用途: 頻繁に触るファイル調査 / 使い方: git hotfiles
     summary = count-objects -vH      # 用途: リポジトリサイズ確認 / 使い方: git summary
     changelog = !"git log $(git describe --tags --abbrev=0)..HEAD --oneline" # 用途: リリース間の更新一覧 / 使い方: git changelog
@@ -147,7 +145,7 @@
     sa = 退避した作業を適用する / 使い方: git sa
     sp = メッセージを指定して一時退避する / 使い方: git sp "<メッセージ>"
     stash-wip = 未追跡を含めて作業を一時退避する / 使い方: git stash-wip
-    unsh = ステージング状態を維持して逆適用する / 使い方: git unsh
+    unsh = ステージング状態を維持して復元する / 使い方: git unsh
     d = 差分を確認する / 使い方: git d
     dc = ステージング済みの差分を確認する / 使い方: git dc
     uncommit = 直前のコミットを取り消して変更を保持する / 使い方: git uncommit
