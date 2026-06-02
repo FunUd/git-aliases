@@ -54,10 +54,10 @@
 
     # --- 6. add -p 補助 ---
     ap = add -p                      # 用途: インタラクティブに差分を選んでステージング / 使い方: git ap
-    ad = !\"git diff && git add -p\" # 用途: 差分確認のあとに add -p を開始 / 使い方: git ad
-    aps = !\"git add -p && git status --short\" # 用途: add -p のあとにステータスを表示 / 使い方: git aps
-    apc = !\"git add -p && git commit\" # 用途: add -p のあとに commit を開始 / 使い方: git apc
-    apcm = !\"git add -p && git commit -m\" # 用途: add -p のあとにメッセージ付きでコミット / 使い方: git apcm \"メッセージ\"
+    ad = !git diff && git add -p # 用途: 差分確認のあとに add -p を開始 / 使い方: git ad
+    aps = !git add -p && git status --short # 用途: add -p のあとにステータスを表示 / 使い方: git aps
+    apc = !git add -p && git commit # 用途: add -p のあとに commit を開始 / 使い方: git apc
+    apcm = !git add -p && git commit -m # 用途: add -p のあとにメッセージ付きでコミット / 使い方: git apcm \"メッセージ\"
 
     # --- 7. Stash・退避操作 ---
     sl = stash list                  # 用途: 退避履歴を表示 / 使い方: git sl
