@@ -41,7 +41,7 @@
     brm = branch -m                  # 用途: ブランチ名の変更 / 使い方: git brm <新しいブランチ名>
     br-active = branch -vv --sort=-committerdate # 用途: 更新順にブランチ表示 / 使い方: git br-active
     # 用途: マージ済みローカルブランチを安全に一括削除 / 使い方: git bclean
-    bclean = !"git fetch -p && git branch --merged | grep -Ev '^(\\*|[[:space:]]*(main|master|develop)$)' | while read -r branch; do git branch -d \"$branch\"; done"
+    bclean = "!base=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@'); [ -z \"$base\" ] && base=main; current=$(git branch --show-current); git fetch --prune; branches=$(git branch --merged \"origin/$base\" | sed 's/^..//' | grep -vx \"$base\" | grep -vx main | grep -vx master | grep -vx develop | grep -vx \"$current\"); [ -z \"$branches\" ] && echo 'No merged branches.' && exit 0; echo 'Merged branches:'; echo \"$branches\"; count=$(printf '%s\n' \"$branches\" | wc -l); printf 'Delete %s branches? [y/N] ' \"$count\"; read ans; case \"$ans\" in y|Y) ;; *) exit 0 ;; esac; printf '%s\n' \"$branches\" | while IFS= read -r branch; do git branch -d \"$branch\"; done"
     clean-wip = clean -df            # 用途: 未追跡ファイルを強制削除 / 使い方: git clean-wip
     clean-dry = clean -dn            # 用途: 削除される未追跡ファイルの事前確認 / 使い方: git clean-dry
     sync-all = !"git fetch --prune --all && echo 'All remotes pruned and synced.'" # 用途: 全リモート同期 / 使い方: git sync-all
