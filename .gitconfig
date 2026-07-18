@@ -91,8 +91,10 @@
         if [ -n \"$custom_path\" ]; then \
             path=\"$custom_path\"; \
         else \
-            safe_branch=$(printf \"%s\" \"$branch\" | sed \"s#[^A-Za-z0-9._-]#-#g\"); \
-            path=\"../$safe_branch\"; \
+            repo_root=$(git rev-parse --show-toplevel); \
+            repo_name=$(basename \"$repo_root\"); \
+            safe_name=$(printf \"%s-%s\" \"$repo_name\" \"$branch\" | sed \"s#[^A-Za-z0-9._-]#-#g\"); \
+            path=\"$repo_root/../$safe_name\"; \
         fi; \
         echo \"既存ブランチ [$branch] を [$path] に展開します...\"; \
         git worktree add \"$path\" \"$branch\"' -"
