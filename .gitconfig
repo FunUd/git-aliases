@@ -27,7 +27,26 @@
     restore-to = restore --source
 
     # --- 2. 基本操作・コミット ---
-    st = status -sb
+    st = !"_st() { \
+        git status -sb; \
+        conflicts=$(git diff --name-only --diff-filter=U); \
+        if [ -n \"$conflicts\" ]; then \
+            echo \"\"; \
+            printf \"\\033[31m【⚠️ CONFLICT】衝突しているファイルがあります:\\033[0m\\n\"; \
+            echo \"$conflicts\" | sed 's/^/  /'; \
+        fi; \
+        stashes=$(git stash list 2>/dev/null | wc -l | tr -d ' '); \
+        if [ \"$stashes\" -gt 0 ]; then \
+            echo \"\"; \
+            printf \"\\033[36m【📦 Stash】現在 $stashes 件の作業が退避されています (git sl で確認)\\033[0m\\n\"; \
+        fi; \
+        if git rev-parse --git-dir >/dev/null 2>&1 && git log -1 >/dev/null 2>&1; then \
+            echo \"\"; \
+            printf \"\\033[90m【📌 Last Commit】\\033[0m\"; \
+            git log -1 --pretty=format:'%C(yellow)%h%Creset - %s %C(green)(%cr)%Creset'; \
+            echo \"\"; \
+        fi; \
+    }; _st"
     sts = !"git status -sb && echo '' && git diff --stat"
     std = !"git status -sb && echo '--- 変更箇所 (単語単位) ---' && git diff --color-words"
     cm = commit -m
