@@ -1,9 +1,10 @@
 [alias]
     # --- 0. ヘルプ機能 (二重管理を撤廃した汎用パーサー) ---
     # aliasdoc の内容（ソート順|グループ名|用途/使い方）を動的に解析してグループ化出力します
-    ha = "!git config --get-regexp '^aliasdoc\\.' | awk -F'=' '{ \
-        name = substr($1, 10); \
-        split($2, parts, \"|\"); \
+    ha = "!git config --get-regexp '^aliasdoc\\.' | awk '{ \
+        split($1, k, \".\"); name = k[2]; \
+        val = substr($0, length($1) + 2); \
+        split(val, parts, \"|\"); \
         order = parts[1]; \
         group = parts[2]; \
         split(parts[3], desc, \" / 使い方: \"); \
@@ -27,8 +28,8 @@
 
     # --- 2. 基本操作・コミット ---
     st = status -sb
-    sts = !"git status -sb && printf '\\n' && git diff --stat"
-    std = !"git status -sb && printf '\\n--- 変更箇所 (単語単位) ---\\n' && git diff --color-words"
+    sts = !"git status -sb && echo '' && git diff --stat"
+    std = !"git status -sb && echo '--- 変更箇所 (単語単位) ---' && git diff --color-words"
     cm = commit -m
     cma = commit --amend
     ca = commit --amend --no-edit
@@ -42,18 +43,15 @@
     lgn = !"git lga -n 10"
     last = log -1 --stat --decorate --oneline
     lgs = log --graph --stat --name-status --pretty=format:'%C(yellow)commit %h%Creset%C(auto)%d%Creset%nAuthor: %an <%ae>%nDate:   %cd%n%n    %s%n'
-    trace = !sh -c 'git log --follow --graph --pretty=format:\"%C(yellow)%h%Creset -%C(auto)%d%Creset %s %C(green)(%cr) %C(bold blue)<%an>%Creset\" -p -- \"$1\"' -
-    grep-hist = !sh -c 'git log --graph --pretty=format:\"%C(yellow)%h%Creset -%C(auto)%d%Creset %s %C(green)(%cr) %C(bold blue)<%an>%Creset\" -G\"$1\"' -
+    lgf = !sh -c 'git log --follow --graph --pretty=format:\"%C(yellow)%h%Creset -%C(auto)%d%Creset %s %C(green)(%cr) %C(bold blue)<%an>%Creset\" -p -- \"$1\"' -
+    lgh = !sh -c 'git log --graph --pretty=format:\"%C(yellow)%h%Creset -%C(auto)%d%Creset %s %C(green)(%cr) %C(bold blue)<%an>%Creset\" -G\"$1\"' -
 
     # --- 4. クリーンアップ・ブランチ管理 (デフォルトブランチ動的判定) ---
-    br = branch
-    brv = branch -vv
+    br = branch -vv --sort=committerdate
+    brs = branch -vv
     brm = branch -m
-    br-active = branch -vv --sort=-committerdate
     bclean = !"default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo 'main'); git fetch -p && git branch --merged | grep -Ev \"^(\\*|[[:space:]]*($default_branch|master|develop)$)\" | while read -r branch; do git branch -d \"$branch\"; done"
-    clean-wip = clean -df
-    clean-dry = clean -dn
-    sync-all = !"git fetch --prune --all && echo 'All remotes pruned and synced.'"
+    fa = !"git fetch --prune --all && echo 'All remotes pruned and synced.'"
 
     # --- 5. Worktree 操作 ---
     wt = worktree
@@ -130,10 +128,19 @@
 
     # --- 9. 特殊分析・調査 (クリップボード差異を吸収) ---
     today = !"git log --author=\"$(git config user.name)\" --since=\"midnight\" --no-merges --pretty=format:'%C(yellow)%h%Creset %s (%cr)'"
-    hh = !"git rev-parse HEAD | { command -v clip >/dev/null && clip || command -v pbcopy >/dev/null && pbcopy || command -v xclip >/dev/null && xclip -sel clip; } && echo 'Copied HEAD hash to clipboard.'"
+    hh = !"_hh() { \
+            count=${1:-1}; \
+            git log -n \"$count\" --format='%H' | { \
+                if command -v clip >/dev/null 2>&1; then clip; \
+                elif command -v pbcopy >/dev/null 2>&1; then pbcopy; \
+                elif command -v xclip >/dev/null 2>&1; then xclip -sel clip; \
+                else echo 'Error: No clipboard command found.' >&2; exit 1; \
+                fi; \
+            } && echo \"Copied recent $count HEAD hash(es) to clipboard.\"; \
+        }; _hh"
     lf = !"git ls-files -z | xargs -0 wc -l | sort -rn | head -n 20"
-    conflicts = diff --name-only --diff-filter=U
-    ec = !"files=$(git conflicts); if [ -n \"$files\" ]; then echo \"$files\" | xargs ${VISUAL:-${EDITOR:-code --wait}}; fi"
+    cf = diff --name-only --diff-filter=U
+    cfe = !"files=$(git cf); if [ -n \"$files\" ]; then echo \"$files\" | xargs ${VISUAL:-${EDITOR:-code --wait}}; fi"
     hotfiles = !"git log --name-only --since='1 month ago' --pretty=format: | grep -v '^$' | sort | uniq -c | sort -nr | head -n 20"
     changelog = !"git log $(git describe --tags --abbrev=0)..HEAD --oneline"
     ref = reflog --date=relative
@@ -187,18 +194,15 @@
     lgn = 52|ログ・履歴|直近10件のみ表示する / 使い方: git lgn
     last = 53|ログ・履歴|直近コミットの要約と変更統計を表示する / 使い方: git last
     lgs = 54|ログ・履歴|ファイル変更統計付きでログを表示する / 使い方: git lgs
-    trace = 55|ログ・履歴|指定ファイルの変更内容を徹底追跡する / 使い方: git trace <ファイル名>
-    grep-hist = 56|ログ・履歴|コミットの変更差分（diff）の内容から指定キーワードを検索する / 使い方: git grep-hist <検索語>
+    lgf = 55|ログ・履歴|指定ファイルの変更内容を徹底追跡する / 使い方: git lgf <ファイル名>
+    lgh = 56|ログ・履歴|コミットの変更差分（diff）の内容から指定キーワードを検索する / 使い方: git lgh <検索語>
 
     # --- ブランチ整理 ---
-    br = 60|ブランチ整理|ブランチ一覧を表示する / 使い方: git br
-    brv = 61|ブランチ整理|詳細付きでブランチ一覧を表示する / 使い方: git brv
+    br = 60|ブランチ整理|更新順（新しいものが下）にブランチ詳細一覧を表示する / 使い方: git br
+    brs = 61|ブランチ整理|名前順（アルファベット順）にブランチ詳細一覧を表示する / 使い方: git brs
     brm = 62|ブランチ整理|現在のブランチ名を変更する / 使い方: git brm <新しいブランチ名>
-    br-active = 63|ブランチ整理|更新順にブランチを表示する / 使い方: git br-active
     bclean = 64|ブランチ整理|マージ済みローカルブランチを安全に一括削除する / 使い方: git bclean
-    clean-wip = 65|ブランチ整理|未追跡ファイルを強制削除する / 使い方: git clean-wip
-    clean-dry = 66|ブランチ整理|削除される未追跡ファイルを事前に確認する / 使い方: git clean-dry
-    sync-all = 67|ブランチ整理|全リモートを prune して同期する / 使い方: git sync-all
+    fa = 67|ブランチ整理|全リモートの最新状態を反映し、削除済みブランチを掃除する / 使い方: git fa
 
     # --- worktree ---
     wt = 70|worktree|worktree サブコマンドの入り口 / 使い方: git wt
@@ -216,10 +220,10 @@
 
     # --- 調査・診断 ---
     today = 90|調査・診断|今日の作業を作者名ベースで表示する / 使い方: git today
-    hh = 91|調査・診断|HEAD のハッシュをクリップボードへコピーする / 使い方: git hh
+    hh = 91|調査・診断|HEADのハッシュをクリップボードへコピーする（引数で個数指定可） / 使い方: git hh [<個数>]
     lf = 92|調査・診断|巨大ファイルを調べる / 使い方: git lf
-    conflicts = 93|調査・診断|コンフリクト中のファイル一覧を表示する / 使い方: git conflicts
-    ec = 94|調査・診断|コンフリクトファイルを VS Code で開く / 使い方: git ec
+    cf = 93|調査・診断|コンフリクト中のファイル一覧を表示する / 使い方: git cf
+    cfe = 94|調査・診断|コンフリクトファイルを VS Code (Editor) で開く / 使い方: git cfe
     hotfiles = 95|調査・診断|よく触るファイルを集計する / 使い方: git hotfiles
     changelog = 96|調査・診断|リリース間の更新一覧を表示する / 使い方: git changelog
     ref = 97|調査・診断|reflog を相対時刻付きで表示する / 使い方: git ref
